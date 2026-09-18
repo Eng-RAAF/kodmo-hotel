@@ -62,7 +62,7 @@ export function Sidebar({ mobile = false }) {
   }
 
   return (
-    <aside className="relative flex h-full w-[280px] flex-col overflow-hidden bg-navy-900 text-white">
+    <aside className="relative flex h-full max-h-dvh w-full flex-col overflow-hidden bg-navy-900 text-white">
       <div className="relative px-5 pt-6 pb-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

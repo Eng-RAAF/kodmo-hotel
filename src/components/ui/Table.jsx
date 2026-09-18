@@ -6,8 +6,8 @@ export function Table({ columns, rows, rowKey = 'id', emptyTitle = 'No records',
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-left text-sm">
+    <div className="touch-scroll -mx-4 overflow-x-auto overscroll-x-contain sm:mx-0">
+      <table className="min-w-[640px] w-full text-left text-sm sm:min-w-full">
         <thead>
           <tr className="border-b border-stone-line bg-[#f5f5f5] text-xs font-bold text-stone-500">
             {columns.map((column) => (

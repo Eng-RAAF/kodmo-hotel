@@ -66,7 +66,7 @@ export function SearchModal() {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-3 pb-3 sm:items-start sm:px-4 sm:pt-[12vh] sm:pb-0">
       <button type="button" className="absolute inset-0 bg-navy-950/50 backdrop-blur-md" onClick={() => setSearchOpen(false)} aria-label="Close search" />
       <div className="relative w-full max-w-xl overflow-hidden rounded-lg border border-stone-line bg-white shadow-2xl">
         <div className="gold-rule" />

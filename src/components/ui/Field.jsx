@@ -11,7 +11,7 @@ export function Field({ label, error, children, className }) {
 }
 
 const controlClass =
-  'w-full rounded-md border border-[#bdbdbd] bg-white px-3.5 py-2.5 text-sm text-[#1a1a1a] outline-none transition placeholder:text-stone-400 hover:border-navy-700 focus:border-[#006ce4] focus:ring-2 focus:ring-[#006ce4]/25'
+  'w-full min-w-0 rounded-md border border-[#bdbdbd] bg-white px-3.5 py-2.5 text-base text-[#1a1a1a] outline-none transition placeholder:text-stone-400 hover:border-navy-700 focus:border-[#006ce4] focus:ring-2 focus:ring-[#006ce4]/25 sm:text-sm'
 
 export function Input({ className, ...props }) {
   return <input className={cn(controlClass, className)} {...props} />

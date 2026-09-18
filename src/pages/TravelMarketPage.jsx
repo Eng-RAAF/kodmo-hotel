@@ -28,7 +28,7 @@ function BookButton({ itemId, kind, title, price, details }) {
         const confirmation = book({ itemId, kind, title, price, details })
         pushToast(`${title} booked. Confirmation ${confirmation.id}`)
       }}
-      className="rounded-md bg-[#006ce4] px-4 py-2 text-sm font-bold text-white hover:bg-[#0057b8] disabled:bg-emerald-600 disabled:hover:bg-emerald-600"
+      className="w-full rounded-md bg-[#006ce4] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0057b8] disabled:bg-emerald-600 disabled:hover:bg-emerald-600 sm:w-auto sm:py-2"
     >
       {booked ? 'Booked' : kind === 'flights' ? 'Select' : kind === 'taxis' ? 'Book transfer' : 'Book'}
     </button>
@@ -81,7 +81,7 @@ export function TravelMarketPage({ kind }) {
 
   return (
     <div className="bg-[#f5f5f5] pb-16">
-      <div className="mx-auto max-w-[1100px] px-4 pt-3">
+      <div className="mx-auto max-w-[1100px] px-3 pt-3 sm:px-4">
         <nav className="flex flex-wrap items-center gap-1 text-xs text-stone-500">
           <Link to="/" className="hover:text-[#006ce4]">Home</Link>
           <span>›</span>
@@ -89,7 +89,7 @@ export function TravelMarketPage({ kind }) {
           <span>›</span>
           <span>Search results</span>
         </nav>
-        <h1 className="mt-3 text-[22px] font-extrabold tracking-tight text-[#1a1a1a]">{heading}</h1>
+        <h1 className="mt-3 text-lg font-extrabold tracking-tight text-[#1a1a1a] sm:text-[22px]">{heading}</h1>
         <p className="mt-1 text-sm text-stone-500">
           {kind === 'flights' ? `${from || 'Mogadishu'} → ${to || 'Hargeisa'} · ${date}` : null}
           {kind === 'cars' ? `${q || 'Somalia'} · ${nights} day${nights === 1 ? '' : 's'}` : null}
@@ -110,7 +110,7 @@ export function TravelMarketPage({ kind }) {
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{flight.airline} · {flight.cabin}</p>
-                      <p className="mt-1 text-lg font-extrabold text-[#006ce4]">
+                      <p className="mt-1 text-base font-extrabold text-[#006ce4] sm:text-lg">
                         {airportLabel(flight.from)} → {airportLabel(flight.to)}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[#1a1a1a]">

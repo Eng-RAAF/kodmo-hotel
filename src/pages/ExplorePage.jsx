@@ -5,6 +5,7 @@ import {
   LayoutGrid,
   List,
   MapPin,
+  SlidersHorizontal,
   Star,
   ThumbsUp,
   Wifi,
@@ -107,6 +108,7 @@ export function ExplorePage() {
   const [sort, setSort] = useState('top')
   const [compare, setCompare] = useState(false)
   const [starFilter, setStarFilter] = useState([])
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const query = (params.get('q') || '').trim().toLowerCase()
   const adults = params.get('adults') || '2'
@@ -151,7 +153,12 @@ export function ExplorePage() {
 
   const selectHotel = (hotel) => {
     if (!user) {
-      document.getElementById('header-login-email')?.focus()
+      window.dispatchEvent(new Event('stayhub:open-login'))
+      window.setTimeout(() => {
+        const fields = [...document.querySelectorAll('#header-login-email')]
+        const visible = fields.find((field) => field.offsetParent !== null) || fields[0]
+        visible?.focus()
+      }, 80)
       return
     }
     if (isSuperAdmin(user)) {
@@ -167,7 +174,7 @@ export function ExplorePage() {
 
   return (
     <div className="bg-[#f5f5f5] pb-16">
-      <div className="mx-auto max-w-[1100px] px-4 pt-3">
+      <div className="mx-auto max-w-[1100px] px-3 pt-3 sm:px-4">
         <nav className="flex flex-wrap items-center gap-1 text-xs text-stone-500">
           <Link to="/" className="hover:text-[#006ce4]">Home</Link>
           <span>›</span>
@@ -178,8 +185,35 @@ export function ExplorePage() {
           <span>Search results</span>
         </nav>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-          <aside className="space-y-3">
+        <div className="mt-3 flex items-center justify-between gap-2 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((value) => !value)}
+            className="inline-flex items-center gap-2 rounded-md border border-stone-line bg-white px-3 py-2 text-sm font-bold text-[#1a1a1a]"
+          >
+            <SlidersHorizontal size={16} />
+            {filtersOpen ? 'Hide filters' : 'Filters'}
+          </button>
+          <div className="flex overflow-hidden rounded-md border border-stone-line bg-white text-sm font-semibold">
+            <button
+              type="button"
+              onClick={() => setView('list')}
+              className={`flex items-center gap-1 px-3 py-1.5 ${view === 'list' ? 'bg-[#f0f6ff] text-[#006ce4]' : 'text-stone-600'}`}
+            >
+              <List size={14} /> List
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('grid')}
+              className={`flex items-center gap-1 border-l border-stone-line px-3 py-1.5 ${view === 'grid' ? 'bg-[#f0f6ff] text-[#006ce4]' : 'text-stone-600'}`}
+            >
+              <LayoutGrid size={14} /> Grid
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className={`space-y-3 ${filtersOpen ? 'block' : 'hidden lg:block'}`}>
             <div className="overflow-hidden rounded-lg border border-[#8cb3e8] shadow-sm">
               <div className="explore-map relative h-[180px]">
                 <span className="absolute top-8 left-10 text-[11px] font-semibold text-[#3d5a80]">{city}</span>
@@ -242,12 +276,12 @@ export function ExplorePage() {
             </div>
           </aside>
 
-          <section>
+          <section className="min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h1 className="text-[22px] font-extrabold tracking-tight text-[#1a1a1a]">
+              <h1 className="text-lg font-extrabold tracking-tight text-[#1a1a1a] sm:text-[22px]">
                 {place}: {filtered.length.toLocaleString()} {filtered.length === 1 ? 'hotel' : 'hotels'} found
               </h1>
-              <div className="flex overflow-hidden rounded-md border border-stone-line bg-white text-sm font-semibold">
+              <div className="hidden overflow-hidden rounded-md border border-stone-line bg-white text-sm font-semibold lg:flex">
                 <button
                   type="button"
                   onClick={() => setView('list')}
@@ -295,11 +329,11 @@ export function ExplorePage() {
                       <div className={`relative shrink-0 overflow-hidden ${view === 'grid' ? 'h-44 w-full' : 'h-44 sm:h-auto sm:w-[240px]'}`}>
                         <img src={photoFor(hotel, index)} alt="" className="h-full w-full object-cover" />
                       </div>
-                      <div className="flex flex-1 flex-col p-4">
+                      <div className="flex flex-1 flex-col p-3 sm:p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <h2 className="text-lg font-extrabold text-[#006ce4]">{hotel.name}</h2>
+                              <h2 className="text-base font-extrabold text-[#006ce4] sm:text-lg">{hotel.name}</h2>
                               <span className="flex text-[#ffb700]">
                                 {Array.from({ length: Number(hotel.stars) || 3 }).map((_, star) => (
                                   <Star key={star} size={13} fill="currentColor" />
@@ -328,7 +362,7 @@ export function ExplorePage() {
                           <button
                             type="button"
                             onClick={() => selectHotel(hotel)}
-                            className="rounded-md bg-[#006ce4] px-4 py-2 text-sm font-bold text-white hover:bg-[#0057b8]"
+                            className="w-full rounded-md bg-[#006ce4] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0057b8] sm:w-auto sm:py-2"
                           >
                             Select dates
                           </button>

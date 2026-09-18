@@ -124,15 +124,15 @@ export function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Occupancy" value={`${metrics.occupancy}%`} hint={`${metrics.occupied} of ${metrics.sellable} sellable rooms`} icon={Percent} trend="+4.2%" />
         <StatCard label="Available rooms" value={metrics.available} hint="Ready for walk-ins and assignments" icon={BedDouble} />
         <StatCard label="Arrivals today" value={metrics.arrivals.length} hint={`${metrics.departures.length} departures scheduled`} icon={LogIn} />
         <StatCard label="Collected revenue" value={formatCurrency(metrics.liveRevenue)} hint="Paid against current and recent stays" icon={CircleDollarSign} trend="+8%" />
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
+      <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-3">
+        <Card className="min-w-0 xl:col-span-2">
           <CardHeader title="Occupancy trend" subtitle="Last 14 days" />
           <div className="h-64 p-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -170,8 +170,8 @@ export function DashboardPage() {
       </div>
 
       {isAllHotels ? (
-        <div className="mt-6 grid gap-4 xl:grid-cols-3">
-          <Card className="xl:col-span-2">
+        <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-3">
+          <Card className="min-w-0 xl:col-span-2">
             <CardHeader title="Revenue by hotel" subtitle="Trailing 14 days" />
             <div className="h-72 p-4">
               <ResponsiveContainer width="100%" height="100%">
@@ -225,8 +225,8 @@ export function DashboardPage() {
         </Card>
       )}
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
+      <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-3">
+        <Card className="min-w-0 xl:col-span-2">
           <CardHeader
             title="Front desk queue"
             subtitle="Arrivals, in-house departures, and upcoming confirmed stays"

@@ -61,9 +61,15 @@ export function AppShell() {
   }, [user, loadAll, logout])
 
   return (
-    <div className="app-shell min-h-screen">
+    <div className="app-shell min-h-screen min-w-0 overflow-x-clip">
       <div className="sticky top-0 z-30">
         <Header />
+        <div className="max-md:hidden">
+          {showStaySearch ? <StaySearchBar /> : null}
+          {showTravelSearch ? <TravelSearchBar /> : null}
+        </div>
+      </div>
+      <div className="md:hidden">
         {showStaySearch ? <StaySearchBar /> : null}
         {showTravelSearch ? <TravelSearchBar /> : null}
       </div>
@@ -71,7 +77,7 @@ export function AppShell() {
       {sidebarOpen && user ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <button type="button" className="absolute inset-0 bg-navy-950/55" onClick={() => setSidebarOpen(false)} aria-label="Close menu" />
-          <div className="relative h-full w-[280px] shadow-2xl">
+          <div className="relative h-full w-[min(100vw-2.5rem,280px)] max-w-full shadow-2xl">
             <Sidebar mobile />
           </div>
         </div>
@@ -80,8 +86,8 @@ export function AppShell() {
       {isPublic ? (
         <Outlet />
       ) : (
-        <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
-          {user && !loaded ? <LoadingScreen /> : <div className="fade-up"><Outlet /></div>}
+        <main className="mx-auto min-w-0 max-w-[1440px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+          {user && !loaded ? <LoadingScreen /> : <div className="fade-up min-w-0"><Outlet /></div>}
         </main>
       )}
       <SearchModal />

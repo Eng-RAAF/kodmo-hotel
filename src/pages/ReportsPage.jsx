@@ -102,7 +102,7 @@ export function ReportsPage() {
         <StatCard label="Cancellations / no-shows" value={kpis.cancelled} icon={Ban} />
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+      <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader title="Occupancy" subtitle={isAllHotels ? 'Compared across hotels' : 'Hotel occupancy'} />
           <div className="h-72 p-4">

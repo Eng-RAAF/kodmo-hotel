@@ -6,7 +6,7 @@ import { AIRPORTS } from '../../data/travelCatalog'
 
 function Field({ icon: Icon, children, className = '' }) {
   return (
-    <label className={`flex items-center gap-3 bg-white px-3 py-2 ${className}`}>
+    <label className={`flex min-w-0 items-center gap-3 bg-white px-3 py-2.5 ${className}`}>
       <Icon size={22} className="shrink-0 text-[#6b6b6b]" />
       {children}
     </label>
@@ -39,7 +39,7 @@ export function TravelSearchBar() {
   ))
 
   return (
-    <div className="bg-navy-900 px-4 pb-4">
+    <div className="bg-navy-900 px-3 pb-4 sm:px-4">
       <form
         key={kind + location.search}
         onSubmit={submit}
@@ -52,20 +52,20 @@ export function TravelSearchBar() {
         {kind === 'flights' ? (
           <>
             <Field icon={Plane} className="">
-              <select name="from" defaultValue={from} aria-label="From" className="w-full bg-transparent text-sm font-semibold outline-none">
+              <select name="from" defaultValue={from} aria-label="From" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm">
                 {airportOptions}
               </select>
             </Field>
             <Field icon={Plane} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <select name="to" defaultValue={to} aria-label="To" className="w-full bg-transparent text-sm font-semibold outline-none">
+              <select name="to" defaultValue={to} aria-label="To" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm">
                 {airportOptions}
               </select>
             </Field>
             <Field icon={CalendarDays} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <span className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold">
-                <input name="date" type="date" aria-label="Depart" defaultValue={date} className="min-w-0 flex-1 bg-transparent outline-none" />
-                <span className="text-stone-300">—</span>
-                <input name="back" type="date" aria-label="Return" defaultValue={back} className="min-w-0 flex-1 bg-transparent outline-none" />
+              <span className="flex min-w-0 flex-1 flex-col gap-2 text-sm font-semibold sm:flex-row sm:items-center">
+                <input name="date" type="date" aria-label="Depart" defaultValue={date} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
+                <span className="hidden text-stone-300 sm:inline">—</span>
+                <input name="back" type="date" aria-label="Return" defaultValue={back} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
               </span>
             </Field>
           </>
@@ -74,13 +74,13 @@ export function TravelSearchBar() {
         {kind === 'cars' ? (
           <>
             <Field icon={Car}>
-              <input name="q" defaultValue={params.get('q') || 'Mogadishu'} placeholder="Pick-up city" aria-label="Pick-up city" className="w-full bg-transparent text-sm font-semibold outline-none" />
+              <input name="q" defaultValue={params.get('q') || 'Mogadishu'} placeholder="Pick-up city" aria-label="Pick-up city" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm" />
             </Field>
             <Field icon={CalendarDays} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <span className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold">
-                <input name="date" type="date" aria-label="Pick-up date" defaultValue={date} className="min-w-0 flex-1 bg-transparent outline-none" />
-                <span className="text-stone-300">—</span>
-                <input name="back" type="date" aria-label="Drop-off date" defaultValue={back} className="min-w-0 flex-1 bg-transparent outline-none" />
+              <span className="flex min-w-0 flex-1 flex-col gap-2 text-sm font-semibold sm:flex-row sm:items-center">
+                <input name="date" type="date" aria-label="Pick-up date" defaultValue={date} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
+                <span className="hidden text-stone-300 sm:inline">—</span>
+                <input name="back" type="date" aria-label="Drop-off date" defaultValue={back} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
               </span>
             </Field>
             <Field icon={User} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
@@ -95,10 +95,10 @@ export function TravelSearchBar() {
         {kind === 'attractions' ? (
           <>
             <Field icon={Sparkles}>
-              <input name="q" defaultValue={q} placeholder="City or attraction" aria-label="Destination" className="w-full bg-transparent text-sm font-semibold outline-none" />
+              <input name="q" defaultValue={q} placeholder="City or attraction" aria-label="Destination" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm" />
             </Field>
             <Field icon={CalendarDays} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <input name="date" type="date" aria-label="Date" defaultValue={date} className="w-full bg-transparent text-sm font-semibold outline-none" />
+              <input name="date" type="date" aria-label="Date" defaultValue={date} className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm" />
             </Field>
           </>
         ) : null}
@@ -106,22 +106,22 @@ export function TravelSearchBar() {
         {kind === 'taxis' ? (
           <>
             <Field icon={Plane}>
-              <select name="from" defaultValue={params.get('from') || 'Mogadishu'} aria-label="Airport city" className="w-full bg-transparent text-sm font-semibold outline-none">
+              <select name="from" defaultValue={params.get('from') || 'Mogadishu'} aria-label="Airport city" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm">
                 {airportOptions}
               </select>
             </Field>
             <Field icon={MapPin} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <input name="to" defaultValue={to === 'Hargeisa' ? 'city hotels' : to} placeholder="Drop-off" aria-label="Drop-off" className="w-full bg-transparent text-sm font-semibold outline-none" />
+              <input name="to" defaultValue={to === 'Hargeisa' ? 'city hotels' : to} placeholder="Drop-off" aria-label="Drop-off" className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm" />
             </Field>
             <Field icon={CalendarDays} className="border-t-4 border-gold-400 md:border-t-0 md:border-l-4">
-              <input name="date" type="date" aria-label="Pickup date" defaultValue={date} className="w-full bg-transparent text-sm font-semibold outline-none" />
+              <input name="date" type="date" aria-label="Pickup date" defaultValue={date} className="w-full min-w-0 bg-transparent text-base font-semibold outline-none sm:text-sm" />
             </Field>
           </>
         ) : null}
 
         <button
           type="submit"
-          className="flex items-center justify-center gap-2 bg-[#006ce4] px-8 py-3 text-lg font-bold text-white hover:bg-[#0057b8] md:border-l-4 md:border-gold-400"
+          className="flex items-center justify-center gap-2 bg-[#006ce4] px-6 py-3 text-lg font-bold text-white hover:bg-[#0057b8] sm:px-8 md:border-l-4 md:border-gold-400"
         >
           <Search size={20} className="md:hidden" />
           Search

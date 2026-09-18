@@ -31,7 +31,9 @@ export function Modal({ open, title, subtitle, onClose, children, footer, wide }
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-3 panel-scroll">{children}</div>
         {footer ? (
-          <div className="flex shrink-0 justify-end gap-2 border-t border-stone-line bg-[#f5f5f5] px-5 py-3">{footer}</div>
+          <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-stone-line bg-[#f5f5f5] px-4 py-3 sm:flex-row sm:justify-end sm:px-5 [&>*]:w-full sm:[&>*]:w-auto">
+            {footer}
+          </div>
         ) : null}
       </div>
     </div>,

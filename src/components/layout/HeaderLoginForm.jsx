@@ -65,14 +65,14 @@ export function HeaderLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex w-full min-w-0 flex-col gap-2 lg:w-auto lg:flex-row lg:items-center">
+    <form onSubmit={handleSubmit(onSubmit)} className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-row lg:items-center">
       <input
         id="header-login-email"
         type="email"
         autoComplete="username"
         placeholder="Email"
         aria-label="Email"
-        className="h-9 w-full rounded-md border-0 bg-white px-3 text-sm font-medium text-[#1a1a1a] outline-none placeholder:text-stone-400 lg:w-44"
+        className="col-span-2 h-10 w-full rounded-md border-0 bg-white px-3 text-base font-medium text-[#1a1a1a] outline-none placeholder:text-stone-400 sm:col-span-1 sm:h-9 sm:text-sm lg:w-44"
         {...register('email', { required: true })}
       />
       <input
@@ -80,20 +80,20 @@ export function HeaderLoginForm() {
         autoComplete="current-password"
         placeholder="Password"
         aria-label="Password"
-        className="h-9 w-full rounded-md border-0 bg-white px-3 text-sm font-medium text-[#1a1a1a] outline-none placeholder:text-stone-400 lg:w-36"
+        className="col-span-2 h-10 w-full rounded-md border-0 bg-white px-3 text-base font-medium text-[#1a1a1a] outline-none placeholder:text-stone-400 sm:col-span-1 sm:h-9 sm:text-sm lg:w-36"
         {...register('password', { required: true })}
       />
       <button
         type="submit"
         disabled={isSubmitting}
-        className="h-9 shrink-0 rounded-md bg-white px-4 text-sm font-bold text-[#006ce4] hover:bg-[#f0f6ff] disabled:opacity-60"
+        className="h-10 shrink-0 rounded-md bg-white px-4 text-sm font-bold text-[#006ce4] hover:bg-[#f0f6ff] disabled:opacity-60 sm:h-9"
       >
         {isSubmitting ? 'Signing in…' : 'Sign in'}
       </button>
       <select
         aria-label="Choose a hotel login"
         defaultValue=""
-        className="h-9 w-full rounded-md border border-white/40 bg-white/10 px-2 text-xs font-semibold text-white outline-none lg:w-[180px]"
+        className="h-10 w-full rounded-md border border-white/40 bg-white/10 px-2 text-xs font-semibold text-white outline-none sm:h-9 lg:w-[180px]"
         onChange={(event) => {
           fillAccount(event.target.value)
           event.target.value = ''
@@ -108,7 +108,7 @@ export function HeaderLoginForm() {
           </option>
         ))}
       </select>
-      <Link to="/forgot-password" className="hidden text-xs font-semibold text-white/80 underline lg:inline">
+      <Link to="/forgot-password" className="col-span-2 text-xs font-semibold text-white/80 underline lg:col-auto lg:inline">
         Forgot?
       </Link>
     </form>

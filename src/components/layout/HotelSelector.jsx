@@ -25,7 +25,7 @@ export function HotelSelector() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex max-w-full items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-2 text-left text-sm text-white hover:bg-white/15"
+        className="flex max-w-full items-center gap-2 rounded-md border border-white/25 bg-white/10 px-2 py-2 text-left text-sm text-white hover:bg-white/15 sm:px-3"
       >
         <Building2 size={15} className="shrink-0 text-gold-400" />
         <span className="truncate font-semibold">{label}</span>

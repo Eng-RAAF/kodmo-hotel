@@ -217,12 +217,12 @@ export function RoomsPage() {
           </>
         }
       >
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {formError ? (
-            <p className="col-span-2 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{formError}</p>
+            <p className="sm:col-span-2 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">{formError}</p>
           ) : null}
           {isAllHotels ? (
-            <Field label="Hotel" className="col-span-2">
+            <Field label="Hotel" className="sm:col-span-2">
               <Select value={form.hotelId} onChange={(event) => applyType(form.typeName, event.target.value)}>
                 <option value="">Select hotel</option>
                 {availableHotels.map((hotel) => (
@@ -237,7 +237,7 @@ export function RoomsPage() {
           <Field label="Floor">
             <Input type="number" min="1" value={form.floor} onChange={(event) => setForm({ ...form, floor: event.target.value })} />
           </Field>
-          <Field label="Room type" className="col-span-2">
+          <Field label="Room type" className="sm:col-span-2">
             {hotelTypes.length ? (
               <Select value={form.typeName} onChange={(event) => applyType(event.target.value, form.hotelId || currentHotelId)}>
                 <option value="">Select type</option>

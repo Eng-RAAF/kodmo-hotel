@@ -74,7 +74,7 @@ export function HousekeepingPage() {
         </Select>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
           {grouped.map((group) => (
             <Card key={group.floor} className="p-4">

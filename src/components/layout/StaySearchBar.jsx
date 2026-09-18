@@ -26,45 +26,45 @@ export function StaySearchBar() {
   }
 
   return (
-    <div className="bg-navy-900 px-4 pb-4">
+    <div className="bg-navy-900 px-3 pb-4 sm:px-4">
       <form
         onSubmit={submit}
         className="mx-auto grid max-w-[1100px] grid-cols-1 overflow-hidden rounded-lg border-4 border-gold-400 bg-gold-400 md:grid-cols-[1.3fr_1.2fr_1.2fr_auto]"
       >
-        <label className="flex items-center gap-3 bg-white px-3 py-2">
+        <label className="flex min-w-0 items-center gap-3 bg-white px-3 py-2.5">
           <BedDouble size={22} className="shrink-0 text-[#6b6b6b]" />
           <input
             name="q"
             aria-label="Destination"
             defaultValue={destination || 'Somalia'}
             placeholder="Where are you going?"
-            className="w-full bg-transparent text-sm font-semibold text-[#1a1a1a] outline-none placeholder:font-normal placeholder:text-stone-400"
+            className="w-full min-w-0 bg-transparent text-base font-semibold text-[#1a1a1a] outline-none placeholder:font-normal placeholder:text-stone-400 sm:text-sm"
           />
         </label>
-        <label className="flex items-center gap-3 border-t-4 border-gold-400 bg-white px-3 py-2 md:border-t-0 md:border-l-4">
+        <label className="flex min-w-0 items-center gap-3 border-t-4 border-gold-400 bg-white px-3 py-2.5 md:border-t-0 md:border-l-4">
           <CalendarDays size={22} className="shrink-0 text-[#6b6b6b]" />
-          <span className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold">
-            <input name="in" type="date" aria-label="Check-in date" defaultValue={checkIn} className="min-w-0 flex-1 bg-transparent outline-none" />
-            <span className="text-stone-300">—</span>
-            <input name="out" type="date" aria-label="Check-out date" defaultValue={checkOut} className="min-w-0 flex-1 bg-transparent outline-none" />
+          <span className="flex min-w-0 flex-1 flex-col gap-2 text-sm font-semibold sm:flex-row sm:items-center">
+            <input name="in" type="date" aria-label="Check-in date" defaultValue={checkIn} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
+            <span className="hidden text-stone-300 sm:inline">—</span>
+            <input name="out" type="date" aria-label="Check-out date" defaultValue={checkOut} className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
           </span>
         </label>
-        <label className="flex items-center gap-3 border-t-4 border-gold-400 bg-white px-3 py-2 md:border-t-0 md:border-l-4">
+        <label className="flex min-w-0 items-center gap-3 border-t-4 border-gold-400 bg-white px-3 py-2.5 md:border-t-0 md:border-l-4">
           <User size={22} className="shrink-0 text-[#6b6b6b]" />
-          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 text-sm font-semibold text-[#1a1a1a]">
-            <input name="adults" type="number" min="1" aria-label="Adults" defaultValue={adults} className="w-7 bg-transparent text-center outline-none" />
+          <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-1 text-sm font-semibold text-[#1a1a1a]">
+            <input name="adults" type="number" min="1" aria-label="Adults" defaultValue={adults} className="w-8 bg-transparent text-center text-base outline-none sm:text-sm" />
             <span>adults</span>
             <span className="text-stone-300">·</span>
-            <input name="children" type="number" min="0" aria-label="Children" defaultValue={children} className="w-7 bg-transparent text-center outline-none" />
+            <input name="children" type="number" min="0" aria-label="Children" defaultValue={children} className="w-8 bg-transparent text-center text-base outline-none sm:text-sm" />
             <span>children</span>
             <span className="text-stone-300">·</span>
-            <input name="rooms" type="number" min="1" aria-label="Rooms" defaultValue={rooms} className="w-7 bg-transparent text-center outline-none" />
+            <input name="rooms" type="number" min="1" aria-label="Rooms" defaultValue={rooms} className="w-8 bg-transparent text-center text-base outline-none sm:text-sm" />
             <span>room</span>
           </span>
         </label>
         <button
           type="submit"
-          className="flex items-center justify-center gap-2 bg-[#006ce4] px-8 py-3 text-lg font-bold text-white hover:bg-[#0057b8] md:border-l-4 md:border-gold-400"
+          className="flex items-center justify-center gap-2 bg-[#006ce4] px-6 py-3 text-lg font-bold text-white hover:bg-[#0057b8] sm:px-8 md:border-l-4 md:border-gold-400"
         >
           <Search size={20} className="md:hidden" />
           Search

@@ -210,13 +210,13 @@ export function SettingsPage() {
         title="Settings"
         subtitle={superAdmin ? 'Organization profile, login admins, and room-type catalog.' : 'Login admins and room-type catalog for your hotel.'}
       />
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="no-scrollbar mb-5 flex gap-2 overflow-x-auto pb-1">
         {tabs.map((item) => (
           <button
             key={item}
             type="button"
             onClick={() => setTab(item)}
-            className={`tab-pill ${tab === item ? 'tab-pill-active' : ''}`}
+            className={`tab-pill shrink-0 ${tab === item ? 'tab-pill-active' : ''}`}
           >
             {item}
           </button>

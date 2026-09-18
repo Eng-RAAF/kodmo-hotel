@@ -16,7 +16,7 @@ export function Card({ className, children, ...props }) {
 
 export function CardHeader({ title, subtitle, action, className }) {
   return (
-    <div className={cn('flex items-start justify-between gap-3 border-b border-stone-line px-5 py-3.5', className)}>
+    <div className={cn('flex flex-col items-start justify-between gap-2 border-b border-stone-line px-4 py-3.5 sm:flex-row sm:items-start sm:gap-3 sm:px-5', className)}>
       <div>
         <h3 className="text-base font-bold text-navy-900">{title}</h3>
         {subtitle ? <p className="mt-0.5 text-xs leading-5 text-stone-500">{subtitle}</p> : null}
