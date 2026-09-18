@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-navy-950: #00224f;
+  --color-navy-900: #003b95;
+  --color-navy-800: #1a4fa0;
+  --color-navy-700: #2663b8;
+  --color-navy-600: #3d7cc9;
+  --color-gold-200: #ffe9a8;
+  --color-gold-300: #ffd56a;
+  --color-gold-400: #ffb700;
+  --color-gold-500: #f5a700;
+  --color-gold-600: #e6a100;
+  --color-ivory-50: #ffffff;
+  --color-ivory-100: #f2f2f2;
+  --color-ivory-200: #e7e7e7;
+  --color-stone-line: #e7e7e7;
+  --shadow-luxury: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px -16px rgba(0, 59, 149, 0.25);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: #1a1a1a;
+  font-family: var(--font-sans);
+  background: #f5f5f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: normal;
+}
+
+.app-shell {
+  background: #f5f5f5;
+}
+
+.surface-card {
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.surface-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.gold-rule {
+  height: 4px;
+  background: #ffb700;
+}
+
+.gold-frame {
+  box-shadow: 0 2px 16px rgba(0, 59, 149, 0.12);
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b6b6b;
+  transition: 0.15s ease;
+}
+
+.chip:hover {
+  border-color: #003b95;
+  color: #003b95;
+}
+
+.chip-active {
+  border-color: #003b95;
+  background: #003b95;
+  color: white;
+}
+
+.tab-pill {
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e7e7e7;
+  transition: 0.15s ease;
+}
+
+.tab-pill-active {
+  background: #003b95;
+  color: white;
+  box-shadow: none;
+}
+
+.fade-up {
+  animation: fadeUp 0.35s ease-out both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sidebar-scroll::-webkit-scrollbar,
+.panel-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb,
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 99px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.55;
+}
+
+::selection {
+  background: rgba(0, 108, 228, 0.18);
+}
+
+:focus-visible {
+  outline: 2px solid #006ce4;
+  outline-offset: 2px;
+}
+
+.score-box {
+  display: inline-flex;
+  min-width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px 6px 6px 0;
+  background: #003b95;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.explore-map {
+  background:
+    radial-gradient(circle at 30% 40%, rgba(0, 108, 228, 0.18), transparent 28%),
+    linear-gradient(180deg, #d7e8c8 0%, #cfe0b8 38%, #e8efe4 70%, #c5ddd0 100%);
+  background-color: #d9ead3;
+}
+
+.explore-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.35) 25%, transparent 26%),
+    linear-gradient(0deg, transparent 44%, rgba(120, 140, 160, 0.25) 45%, transparent 46%),
+    linear-gradient(115deg, transparent 60%, rgba(255, 255, 255, 0.4) 61%, transparent 62%);
+  background-size: 48px 48px, 70px 70px, 90px 90px;
+}
