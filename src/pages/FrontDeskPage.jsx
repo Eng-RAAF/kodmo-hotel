@@ -24,7 +24,8 @@ function emptyWalkIn(currentHotelId, availableHotels) {
     hotelId: currentHotelId === 'all' ? availableHotels[0]?.id || '' : currentHotelId,
     firstName: '',
     lastName: '',
-    email: '',
+    idType: 'National ID',
+    idNumber: '',
     phone: '',
     roomId: '',
     nights: 1,
@@ -86,6 +87,10 @@ export function FrontDeskPage() {
       setFormError('Select an available room.')
       return
     }
+    if (!values.idNumber?.trim()) {
+      setFormError('Guest ID is required.')
+      return
+    }
     setSaving(true)
     setFormError('')
     try {
@@ -93,7 +98,8 @@ export function FrontDeskPage() {
         hotelId: isAllHotels ? values.hotelId : currentHotelId,
         firstName: values.firstName,
         lastName: values.lastName,
-        email: values.email,
+        idType: values.idType,
+        idNumber: values.idNumber,
         phone: values.phone,
         roomId: values.roomId,
         nights: Number(values.nights || 1),
@@ -229,7 +235,15 @@ export function FrontDeskPage() {
           ) : null}
           <Field label="First name"><Input {...register('firstName', { required: true })} /></Field>
           <Field label="Last name"><Input {...register('lastName', { required: true })} /></Field>
-          <Field label="Email"><Input type="email" {...register('email')} /></Field>
+          <Field label="ID type">
+            <Select {...register('idType', { required: true })}>
+              <option value="National ID">National ID</option>
+              <option value="Passport">Passport</option>
+            </Select>
+          </Field>
+          <Field label="ID">
+            <Input {...register('idNumber', { required: true })} placeholder="ID number" />
+          </Field>
           <Field label="Phone"><Input {...register('phone')} /></Field>
           <Field label="Room">
             <Select {...register('roomId', { required: true })}>

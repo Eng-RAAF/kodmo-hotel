@@ -168,7 +168,8 @@ export const useDataStore = create((set, get) => ({
       nights: Math.max(1, Number(payload.nights) || 1),
     }
     if (payload.hotelId) args.hotelId = payload.hotelId
-    if (payload.email) args.email = String(payload.email).trim()
+    if (payload.idType) args.idType = String(payload.idType).trim()
+    if (payload.idNumber) args.idNumber = String(payload.idNumber).trim()
     if (payload.phone) args.phone = String(payload.phone).trim()
     const { guest, reservation } = await convexMutation(api.reservations.walkIn, args)
     set({

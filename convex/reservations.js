@@ -102,8 +102,9 @@ export const walkIn = mutation({
     hotelId: v.optional(v.string()),
     firstName: v.string(),
     lastName: v.string(),
-    email: v.optional(v.string()),
     phone: v.optional(v.string()),
+    idType: v.optional(v.string()),
+    idNumber: v.optional(v.string()),
     roomId: v.string(),
     nights: v.optional(v.number()),
   },
@@ -115,8 +116,10 @@ export const walkIn = mutation({
 
     const firstName = args.firstName.trim()
     const lastName = args.lastName.trim()
+    const idNumber = (args.idNumber || '').trim()
     if (!firstName) fail(400, 'First name is required.')
     if (!lastName) fail(400, 'Last name is required.')
+    if (!idNumber) fail(400, 'Guest ID is required.')
     if (!args.roomId) fail(400, 'Select an available room.')
 
     const room = await ctx.db
@@ -136,12 +139,12 @@ export const walkIn = mutation({
       id: nid('g'),
       firstName,
       lastName,
-      email: (args.email || '').trim(),
+      email: '',
       phone: (args.phone || '').trim(),
       nationality: 'Somalia',
       vip: false,
-      idType: 'National ID',
-      idNumber: '',
+      idType: (args.idType || 'National ID').trim() || 'National ID',
+      idNumber,
       notes: 'Created from walk-in check-in.',
     }
     await ctx.db.insert('guests', guest)
