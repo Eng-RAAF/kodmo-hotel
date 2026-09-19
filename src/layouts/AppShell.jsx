@@ -2,17 +2,14 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from '../components/layout/Sidebar'
 import { Header } from '../components/layout/Header'
-import { PUBLIC_TRAVEL_PATHS } from '../lib/constants'
-import { StaySearchBar } from '../components/layout/StaySearchBar'
-import { TravelSearchBar } from '../components/layout/TravelSearchBar'
+import { isSuperAdmin } from '../lib/constants'
 import { SearchModal } from '../components/layout/SearchModal'
 import { Toasts } from '../components/layout/Toasts'
 import { useUiStore } from '../store/uiStore'
 import { useAuthStore } from '../store/authStore'
 import { useHotelStore } from '../store/hotelStore'
 import { useDataStore } from '../store/dataStore'
-
-const PUBLIC_PATHS = PUBLIC_TRAVEL_PATHS.concat(['/login', '/forgot-password'])
+import { matchHotelApp } from '../lib/paths'
 
 function LoadingScreen() {
   return (
@@ -41,17 +38,16 @@ export function AppShell() {
   const loadAll = useDataStore((state) => state.loadAll)
   const loaded = useDataStore((state) => state.loaded)
   const logout = useAuthStore((state) => state.logout)
-  const isPublic = PUBLIC_PATHS.includes(location.pathname)
-  const showStaySearch = location.pathname === '/'
-  const showTravelSearch = ['/flights', '/cars', '/attractions', '/taxis'].includes(location.pathname)
 
   useEffect(() => {
     if (!user) return
-    const orgWide = user.role === 'Super Admin'
-    if (!orgWide && user.hotelId && currentHotelId === 'all') {
+    if (!isSuperAdmin(user) && user.hotelId && currentHotelId === 'all') {
       setHotel(user.hotelId)
     }
-  }, [user, currentHotelId, setHotel])
+    if (isSuperAdmin(user) && !matchHotelApp(location.pathname)) {
+      setHotel('all')
+    }
+  }, [user, currentHotelId, setHotel, location.pathname])
 
   useEffect(() => {
     if (!user) return
@@ -61,35 +57,23 @@ export function AppShell() {
   }, [user, loadAll, logout])
 
   return (
-    <div className="app-shell min-h-screen min-w-0 overflow-x-clip">
-      <div className="sticky top-0 z-30">
+    <div className="app-shell min-h-screen min-h-dvh min-w-0 overflow-x-clip">
+      <div className="sticky top-0 z-30 pt-[env(safe-area-inset-top)]">
         <Header />
-        <div className="max-md:hidden">
-          {showStaySearch ? <StaySearchBar /> : null}
-          {showTravelSearch ? <TravelSearchBar /> : null}
-        </div>
-      </div>
-      <div className="md:hidden">
-        {showStaySearch ? <StaySearchBar /> : null}
-        {showTravelSearch ? <TravelSearchBar /> : null}
       </div>
 
       {sidebarOpen && user ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <button type="button" className="absolute inset-0 bg-navy-950/55" onClick={() => setSidebarOpen(false)} aria-label="Close menu" />
-          <div className="relative h-full w-[min(100vw-2.5rem,280px)] max-w-full shadow-2xl">
+          <div className="relative h-full w-[min(100vw-2.5rem,20rem)] max-w-full pt-[env(safe-area-inset-top)] shadow-2xl">
             <Sidebar mobile />
           </div>
         </div>
       ) : null}
 
-      {isPublic ? (
-        <Outlet />
-      ) : (
-        <main className="mx-auto min-w-0 max-w-[1440px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
-          {user && !loaded ? <LoadingScreen /> : <div className="fade-up min-w-0"><Outlet /></div>}
-        </main>
-      )}
+      <main className="mx-auto min-w-0 w-full max-w-[1440px] px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-6 lg:px-8">
+        {user && !loaded ? <LoadingScreen /> : <div className="fade-up min-w-0"><Outlet /></div>}
+      </main>
       <SearchModal />
       <Toasts />
     </div>

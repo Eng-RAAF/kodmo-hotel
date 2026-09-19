@@ -12,6 +12,7 @@ const HOTEL_MANAGER_ACCESS = [
   'housekeeping',
   'staff',
   'payments',
+  'receivables',
   'reports',
   'settings',
   'profile',
@@ -28,6 +29,7 @@ export const ROLE_ACCESS = {
     'housekeeping',
     'staff',
     'payments',
+    'receivables',
     'reports',
     'settings',
     'profile',
@@ -74,9 +76,17 @@ export function addDays(iso, days) {
 }
 
 export function nightsBetween(checkIn, checkOut) {
-  const start = new Date(`${checkIn}T00:00:00.000Z`)
-  const end = new Date(`${checkOut}T00:00:00.000Z`)
+  const start = new Date(`${checkIn}T00:00:00`)
+  const end = new Date(`${checkOut}T00:00:00`)
   return Math.max(1, Math.round((end - start) / 86400000))
+}
+
+export function invoiceStatus(amount, paid, dueDate, today = todayIso()) {
+  const due = Math.max(0, Number(amount || 0) - Number(paid || 0))
+  if (due <= 0) return 'paid'
+  const overdue = dueDate && dueDate < today
+  if (Number(paid || 0) > 0) return overdue ? 'overdue' : 'partial'
+  return overdue ? 'overdue' : 'open'
 }
 
 export function publicUser(user) {
@@ -206,6 +216,7 @@ export function serializePayment(payment) {
     id: payment.id,
     hotelId: payment.hotelId,
     reservationId: payment.reservationId ?? null,
+    invoiceId: payment.invoiceId ?? null,
     guestId: payment.guestId ?? null,
     amount: payment.amount,
     method: payment.method,
@@ -213,6 +224,27 @@ export function serializePayment(payment) {
     type: payment.type,
     date: payment.date,
     reference: payment.reference,
+  }
+}
+
+export function serializeInvoice(invoice) {
+  const amount = Number(invoice.amount || 0)
+  const paid = Number(invoice.paid || 0)
+  return {
+    id: invoice.id,
+    hotelId: invoice.hotelId,
+    guestId: invoice.guestId ?? null,
+    reservationId: invoice.reservationId ?? null,
+    number: invoice.number,
+    company: invoice.company || '',
+    type: invoice.type,
+    date: invoice.date,
+    dueDate: invoice.dueDate,
+    amount,
+    paid,
+    balance: Math.max(0, amount - paid),
+    status: invoice.status,
+    notes: invoice.notes || '',
   }
 }
 

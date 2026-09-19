@@ -138,6 +138,7 @@ export default defineSchema({
     id: v.string(),
     hotelId: v.string(),
     reservationId: v.optional(v.string()),
+    invoiceId: v.optional(v.string()),
     guestId: v.optional(v.string()),
     amount: v.number(),
     method: v.string(),
@@ -148,6 +149,25 @@ export default defineSchema({
   })
     .index('by_id_field', ['id'])
     .index('by_hotel', ['hotelId']),
+
+  invoices: defineTable({
+    id: v.string(),
+    hotelId: v.string(),
+    guestId: v.optional(v.string()),
+    reservationId: v.optional(v.string()),
+    number: v.string(),
+    company: v.string(),
+    type: v.string(),
+    date: v.string(),
+    dueDate: v.string(),
+    amount: v.number(),
+    paid: v.number(),
+    status: v.string(),
+    notes: v.string(),
+  })
+    .index('by_id_field', ['id'])
+    .index('by_hotel', ['hotelId'])
+    .index('by_reservation', ['reservationId']),
 
   notifications: defineTable({
     id: v.string(),

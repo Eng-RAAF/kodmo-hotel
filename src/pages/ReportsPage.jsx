@@ -103,9 +103,9 @@ export function ReportsPage() {
       </div>
 
       <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-2">
-        <Card>
+        <Card className="min-w-0">
           <CardHeader title="Occupancy" subtitle={isAllHotels ? 'Compared across hotels' : 'Hotel occupancy'} />
-          <div className="h-72 p-4">
+          <div className="h-56 min-w-0 p-3 sm:h-72 sm:p-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={occupancyChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e0d4" />
@@ -125,9 +125,9 @@ export function ReportsPage() {
             </ResponsiveContainer>
           </div>
         </Card>
-        <Card>
+        <Card className="min-w-0">
           <CardHeader title="Revenue" />
-          <div className="h-72 p-4">
+          <div className="h-56 min-w-0 p-3 sm:h-72 sm:p-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e0d4" />

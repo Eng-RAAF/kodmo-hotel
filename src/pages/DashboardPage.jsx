@@ -29,9 +29,10 @@ import { Card, CardHeader } from '../components/ui/Card'
 import { Table } from '../components/ui/Table'
 import { ReservationStatusBadge, RoomStatusBadge } from '../components/ui/Badge'
 import { useDataStore } from '../store/dataStore'
-import { useHotelScope, useScopedList } from '../hooks/useHotelScope'
+import { useHotelScope, useHotelPath, useScopedList } from '../hooks/useHotelScope'
 import { TODAY, canAccess } from '../lib/constants'
 import { formatCurrency, formatDate, formatShortDate, percent } from '../lib/format'
+import { hotelAppPath } from '../lib/paths'
 import { useAuthStore } from '../store/authStore'
 
 const PIE_COLORS = {
@@ -45,6 +46,7 @@ const PIE_COLORS = {
 
 export function DashboardPage() {
   const { currentHotel, isAllHotels } = useHotelScope()
+  const { path } = useHotelPath()
   const user = useAuthStore((state) => state.user)
   const hotels = useDataStore((state) => state.hotels)
   const rooms = useScopedList(useDataStore((state) => state.rooms))
@@ -134,7 +136,7 @@ export function DashboardPage() {
       <div className="mt-6 grid min-w-0 gap-4 xl:grid-cols-3">
         <Card className="min-w-0 xl:col-span-2">
           <CardHeader title="Occupancy trend" subtitle="Last 14 days" />
-          <div className="h-64 p-4">
+          <div className="h-52 min-w-0 p-3 sm:h-64 sm:p-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={occupancyChart}>
                 <defs>
@@ -154,7 +156,7 @@ export function DashboardPage() {
         </Card>
         <Card>
           <CardHeader title="Room status" subtitle={`${rooms.length} rooms in scope`} />
-          <div className="h-64 p-4">
+          <div className="h-52 min-w-0 p-3 sm:h-64 sm:p-4">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={roomMix} dataKey="value" nameKey="name" innerRadius={52} outerRadius={80} paddingAngle={3}>
@@ -202,16 +204,21 @@ export function DashboardPage() {
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e7e7e7]">
                     <div className="h-full rounded-full bg-navy-900" style={{ width: `${hotel.occ}%` }} />
                   </div>
-                  <p className="mt-2 text-xs text-stone-500">{formatCurrency(hotel.revenue)} collected</p>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <p className="text-xs text-stone-500">{formatCurrency(hotel.revenue)} collected</p>
+                    <Link to={hotelAppPath(hotel.id, 'dashboard')} className="text-xs font-bold text-[#006ce4] hover:underline">
+                      Open system
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
           </Card>
         </div>
       ) : (
-        <Card className="mt-6">
+        <Card className="mt-6 min-w-0">
           <CardHeader title="Revenue" subtitle="Last 14 days at this hotel" />
-          <div className="h-64 p-4">
+          <div className="h-52 min-w-0 p-3 sm:h-64 sm:p-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7e7e7" />
@@ -232,7 +239,7 @@ export function DashboardPage() {
             subtitle="Arrivals, in-house departures, and upcoming confirmed stays"
             action={
               canAccess(user?.role, 'front-desk') ? (
-                <Link to="/front-desk" className="text-xs font-bold text-[#006ce4] hover:underline">
+                <Link to={path('front-desk')} className="text-xs font-bold text-[#006ce4] hover:underline">
                   Open front desk
                 </Link>
               ) : null
@@ -271,7 +278,7 @@ export function DashboardPage() {
             subtitle={`${tasks.filter((task) => task.status !== 'done').length} open tasks`}
             action={
               canAccess(user?.role, 'housekeeping') ? (
-                <Link to="/housekeeping" className="text-xs font-bold text-[#006ce4] hover:underline">
+                <Link to={path('housekeeping')} className="text-xs font-bold text-[#006ce4] hover:underline">
                   Board
                 </Link>
               ) : null
@@ -305,9 +312,9 @@ export function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        {canAccess(user?.role, 'reservations') ? <QuickLink to="/reservations" icon={CalendarCheck} label="New reservation" /> : null}
-        {canAccess(user?.role, 'front-desk') ? <QuickLink to="/front-desk" icon={LogOut} label="Run check-out" /> : null}
-        {canAccess(user?.role, 'reports') ? <QuickLink to="/reports" icon={Percent} label="Open reports" /> : null}
+        {canAccess(user?.role, 'reservations') ? <QuickLink to={path('reservations')} icon={CalendarCheck} label="New reservation" /> : null}
+        {canAccess(user?.role, 'front-desk') ? <QuickLink to={path('front-desk')} icon={LogOut} label="Run check-out" /> : null}
+        {canAccess(user?.role, 'reports') ? <QuickLink to={path('reports')} icon={Percent} label="Open reports" /> : null}
       </div>
     </div>
   )

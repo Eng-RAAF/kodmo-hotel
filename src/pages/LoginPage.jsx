@@ -1,12 +1,17 @@
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import { Button } from '../components/ui/Button'
 import { Field, Input } from '../components/ui/Field'
 import { DEMO_ACCOUNTS } from '../lib/constants'
+import { postLoginPath } from '../lib/paths'
+import { api, convexQuery } from '../api/client'
 import { useAuthStore } from '../store/authStore'
 import { useHotelStore } from '../store/hotelStore'
 import { useUiStore } from '../store/uiStore'
+
+const demoByEmail = Object.fromEntries(DEMO_ACCOUNTS.map((account) => [account.email, account]))
 
 export function LoginPage() {
   const login = useAuthStore((state) => state.login)
@@ -14,6 +19,14 @@ export function LoginPage() {
   const pushToast = useUiStore((state) => state.pushToast)
   const navigate = useNavigate()
   const location = useLocation()
+  const [options, setOptions] = useState(
+    DEMO_ACCOUNTS.map((account) => ({
+      email: account.email,
+      label: account.role === 'Super Admin' ? 'Super Admin' : account.scope,
+      role: account.role,
+      scope: account.scope,
+    })),
+  )
   const {
     register,
     handleSubmit,
@@ -23,6 +36,19 @@ export function LoginPage() {
     defaultValues: { email: '', password: '' },
   })
 
+  useEffect(() => {
+    let alive = true
+    convexQuery(api.hotels.loginOptions)
+      .then((rows) => {
+        if (!alive || !Array.isArray(rows) || !rows.length) return
+        setOptions(rows)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+
   const onSubmit = async ({ email, password }) => {
     const result = await login(email, password)
     if (!result.ok) {
@@ -31,11 +57,20 @@ export function LoginPage() {
     }
     const orgWide = result.user.role === 'Super Admin'
     setHotel(orgWide ? 'all' : result.user.hotelId)
-    navigate(location.state?.from || '/dashboard', { replace: true })
+    navigate(postLoginPath(result.user, location.state?.from), { replace: true })
+  }
+
+  const fillAccount = (option) => {
+    if (!option.email) {
+      pushToast('This hotel has no manager login yet. Create one under Settings.', 'info')
+      return
+    }
+    setValue('email', option.email)
+    setValue('password', demoByEmail[option.email]?.password || '')
   }
 
   return (
-    <div className="rounded-lg border border-stone-line bg-white p-7 shadow-sm sm:p-8">
+    <div className="rounded-lg border border-stone-line bg-white p-5 shadow-sm sm:p-8">
       <div className="mb-6 flex items-center gap-3 lg:hidden">
         <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy-900 text-gold-400">
           <Building2 size={18} />
@@ -43,13 +78,16 @@ export function LoginPage() {
         <p className="text-2xl font-extrabold text-navy-900">StayHub</p>
       </div>
       <p className="text-sm font-bold text-[#006ce4]">Sign in</p>
-      <h1 className="mt-1 text-3xl font-extrabold text-[#1a1a1a]">Welcome back</h1>
-      <p className="mt-2 text-sm leading-6 text-stone-500">Sign in as Super Admin or as a Hotel Manager Admin for a single hotel.</p>
+      <h1 className="mt-1 text-2xl font-extrabold text-[#1a1a1a] sm:text-3xl">Welcome back</h1>
+      <p className="mt-2 text-sm leading-6 text-stone-500">
+        Sign in to open your hotel system. Super Admin manages the group; each hotel manager enters only their hotel.
+      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-7 space-y-4">
         <Field label="Email" error={errors.email?.message}>
           <Input
             type="email"
+            autoComplete="username"
             placeholder="you@stayhub.com"
             {...register('email', { required: 'Email is required' })}
           />
@@ -57,6 +95,7 @@ export function LoginPage() {
         <Field label="Password" error={errors.password?.message}>
           <Input
             type="password"
+            autoComplete="current-password"
             placeholder="Enter password"
             {...register('password', { required: 'Password is required' })}
           />
@@ -72,24 +111,23 @@ export function LoginPage() {
       </form>
 
       <div className="mt-8 rounded-md border border-stone-line bg-[#f5f5f5] p-4">
-        <p className="text-xs font-bold text-stone-500">Demo accounts</p>
+        <p className="text-xs font-bold text-stone-500">Accounts</p>
         <div className="mt-3 space-y-1.5">
-          {DEMO_ACCOUNTS.map((user) => (
+          {options.map((option) => (
             <button
-              key={user.email}
+              key={`${option.hotelId || 'sa'}-${option.email || option.label}`}
               type="button"
-              onClick={() => {
-                setValue('email', user.email)
-                setValue('password', user.password)
-              }}
-              className="flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-xs transition hover:bg-white"
+              onClick={() => fillAccount(option)}
+              className="flex w-full min-w-0 items-center justify-between gap-2 rounded-md px-2.5 py-2 text-left text-xs transition hover:bg-white"
             >
-              <span className="font-bold text-navy-900">{user.role}</span>
-              <span className="text-stone-400">{user.scope || user.email}</span>
+              <span className="min-w-0 shrink font-bold text-navy-900">{option.label}</span>
+              <span className="min-w-0 truncate pl-2 text-stone-400">{option.email || 'No manager'}</span>
             </button>
           ))}
         </div>
-        <p className="mt-3 text-[11px] text-stone-400">Hotel Manager Admins only see their own hotel. Super Admin sees the whole group.</p>
+        <p className="mt-3 text-[11px] text-stone-400">
+          Choose an account to fill the form, then sign in. Each hotel manager lands in that hotel only.
+        </p>
       </div>
     </div>
   )

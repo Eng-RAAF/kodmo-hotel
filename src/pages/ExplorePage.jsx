@@ -17,6 +17,7 @@ import {
 import { api, convexQuery } from '../api/client'
 import { useAuthStore } from '../store/authStore'
 import { isSuperAdmin } from '../lib/constants'
+import { hotelAppPath } from '../lib/paths'
 
 const PHOTOS = [
   'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80',
@@ -162,10 +163,12 @@ export function ExplorePage() {
       return
     }
     if (isSuperAdmin(user)) {
-      navigate('/hotels')
+      navigate(hotelAppPath(hotel.id, 'dashboard'))
       return
     }
-    navigate('/front-desk')
+    if (user.hotelId) {
+      navigate(hotelAppPath(user.hotelId, 'dashboard'))
+    }
   }
 
   const toggleStar = (value) => {

@@ -134,7 +134,7 @@ export function FrontDeskPage() {
         }
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 grid gap-3 grid-cols-1 sm:grid-cols-3">
         {TABS.map((item) => (
           <button
             key={item.id}

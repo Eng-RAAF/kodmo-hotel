@@ -15,6 +15,7 @@ import {
   serializeRoomType,
   serializeStaff,
   serializeTask,
+  serializeInvoice,
 } from './lib'
 
 function shortName(name) {
@@ -39,6 +40,7 @@ export const get = query({
       staff,
       housekeepingTasks,
       payments,
+      invoices,
       notifications,
       roomTypes,
       metrics,
@@ -52,6 +54,7 @@ export const get = query({
       ctx.db.query('staff').collect(),
       ctx.db.query('housekeepingTasks').collect(),
       ctx.db.query('payments').collect(),
+      ctx.db.query('invoices').collect(),
       ctx.db.query('notifications').collect(),
       ctx.db.query('roomTypes').collect(),
       ctx.db.query('dailyMetrics').collect(),
@@ -65,6 +68,7 @@ export const get = query({
     staff.sort((a, b) => a.name.localeCompare(b.name))
     housekeepingTasks.sort((a, b) => a.due.localeCompare(b.due))
     payments.sort((a, b) => b.date.localeCompare(a.date))
+    invoices.sort((a, b) => b.dueDate.localeCompare(a.dueDate) || a.number.localeCompare(b.number))
     notifications.sort((a, b) => a.id.localeCompare(b.id))
     roomTypes.sort((a, b) => a.name.localeCompare(b.name))
     metrics.sort((a, b) => a.date.localeCompare(b.date))
@@ -77,6 +81,7 @@ export const get = query({
       staff = staff.filter((member) => member.hotelId === scopeHotelId)
       housekeepingTasks = housekeepingTasks.filter((task) => task.hotelId === scopeHotelId)
       payments = payments.filter((payment) => payment.hotelId === scopeHotelId)
+      invoices = invoices.filter((invoice) => invoice.hotelId === scopeHotelId)
       notifications = notifications.filter((item) => item.hotelId === scopeHotelId || item.hotelId === 'all')
       roomTypes = roomTypes.filter((type) => type.hotelId === scopeHotelId)
       metrics = metrics.filter((row) => row.hotelId === scopeHotelId)
@@ -128,6 +133,7 @@ export const get = query({
       staff: staff.map(serializeStaff),
       housekeepingTasks: housekeepingTasks.map(serializeTask),
       payments: payments.map(serializePayment),
+      invoices: invoices.map(serializeInvoice),
       notifications: notifications.map(serializeNotification),
       roomTypes: roomTypes.map(serializeRoomType),
       occupancyTrend,

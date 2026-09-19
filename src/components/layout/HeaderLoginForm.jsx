@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { DEMO_ACCOUNTS } from '../../lib/constants'
+import { DEMO_ACCOUNTS, PUBLIC_TRAVEL_PATHS } from '../../lib/constants'
+import { postLoginPath } from '../../lib/paths'
 import { api, convexQuery } from '../../api/client'
 import { useAuthStore } from '../../store/authStore'
 import { useHotelStore } from '../../store/hotelStore'
@@ -50,7 +51,8 @@ export function HeaderLoginForm() {
     }
     const orgWide = result.user.role === 'Super Admin'
     setHotel(orgWide ? 'all' : result.user.hotelId)
-    navigate(location.state?.from || '/dashboard', { replace: true })
+    const from = PUBLIC_TRAVEL_PATHS.includes(location.pathname) ? undefined : location.state?.from
+    navigate(postLoginPath(result.user, from), { replace: true })
   }
 
   const fillAccount = (value) => {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CircleDollarSign, Clock3, Plus, Wallet } from 'lucide-react'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -11,10 +12,9 @@ import { Table } from '../components/ui/Table'
 import { Badge } from '../components/ui/Badge'
 import { PAYMENT_METHODS } from '../lib/constants'
 import { useDataStore } from '../store/dataStore'
-import { useHotelScope, useScopedList } from '../hooks/useHotelScope'
+import { useHotelScope, useHotelPath, useScopedList } from '../hooks/useHotelScope'
 import { useUiStore } from '../store/uiStore'
 import { formatCurrency, formatDate } from '../lib/format'
-import { CircleDollarSign, Clock3, Wallet } from 'lucide-react'
 
 const statusTone = {
   paid: 'emerald',
@@ -30,6 +30,7 @@ export function PaymentsPage() {
   const hotels = useDataStore((state) => state.hotels)
   const addPayment = useDataStore((state) => state.addPayment)
   const { currentHotelId, isAllHotels } = useHotelScope()
+  const { path } = useHotelPath()
   const pushToast = useUiStore((state) => state.pushToast)
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm({
@@ -55,14 +56,19 @@ export function PaymentsPage() {
     <div>
       <PageHeader
         title="Payments"
-        subtitle="Folios, collected cash, and outstanding balances. Recording a payment updates the reservation paid amount."
+        subtitle="Folios, collected cash, and outstanding balances. Open receivables for aging, city ledger, and collections."
         actions={
-          <Button onClick={() => setOpen(true)}>
-            <Plus size={16} /> Record payment
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button as={Link} to={path('receivables')} variant="outline">
+              Open receivables
+            </Button>
+            <Button onClick={() => setOpen(true)}>
+              <Plus size={16} /> Record payment
+            </Button>
+          </div>
         }
       />
-      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Collected" value={formatCurrency(collected)} icon={CircleDollarSign} />
         <StatCard label="Outstanding folios" value={formatCurrency(due)} icon={Wallet} />
         <StatCard label="Pending invoices" value={formatCurrency(pending)} icon={Clock3} />

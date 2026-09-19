@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Search, X } from 'lucide-react'
 import { useDataStore } from '../../store/dataStore'
 import { useUiStore } from '../../store/uiStore'
-import { useHotelScope } from '../../hooks/useHotelScope'
+import { useHotelScope, useHotelPath } from '../../hooks/useHotelScope'
 import { Input } from '../ui/Field'
 
 export function SearchModal() {
@@ -16,6 +16,7 @@ export function SearchModal() {
   const reservations = useDataStore((state) => state.reservations)
   const hotels = useDataStore((state) => state.hotels)
   const { currentHotelId, isAllHotels } = useHotelScope()
+  const { path } = useHotelPath()
 
   useEffect(() => {
     const onKey = (event) => {
@@ -40,7 +41,7 @@ export function SearchModal() {
         id: guest.id,
         title: `${guest.firstName} ${guest.lastName}`,
         subtitle: guest.email,
-        to: '/guests',
+        to: path('guests'),
       }))
     const roomHits = rooms
       .filter((room) => hotelOk(room.hotelId) && `${room.number} ${room.type}`.toLowerCase().includes(q))
@@ -49,7 +50,7 @@ export function SearchModal() {
         id: room.id,
         title: `Room ${room.number}`,
         subtitle: `${hotels.find((h) => h.id === room.hotelId)?.name} · ${room.type}`,
-        to: '/rooms',
+        to: path('rooms'),
       }))
     const stayHits = reservations
       .filter((item) => hotelOk(item.hotelId) && item.id.toLowerCase().includes(q))
@@ -58,10 +59,10 @@ export function SearchModal() {
         id: item.id,
         title: item.id.toUpperCase(),
         subtitle: `${item.status.replaceAll('_', ' ')} · ${item.checkIn}`,
-        to: '/reservations',
+        to: path('reservations'),
       }))
     return [...guestHits, ...roomHits, ...stayHits]
-  }, [query, guests, rooms, reservations, hotels, currentHotelId, isAllHotels])
+  }, [query, guests, rooms, reservations, hotels, currentHotelId, isAllHotels, path])
 
   if (!open) return null
 

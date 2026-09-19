@@ -7,7 +7,7 @@ export function Modal({ open, title, subtitle, onClose, children, footer, wide }
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:items-center sm:p-6"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}

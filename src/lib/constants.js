@@ -25,22 +25,24 @@ const HOTEL_MANAGER_ACCESS = [
   'housekeeping',
   'staff',
   'payments',
+  'receivables',
   'reports',
   'settings',
   'profile',
 ]
 
 export const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', icon: 'LayoutDashboard', key: 'dashboard' },
-  { to: '/hotels', label: 'Hotels', icon: 'Building2', key: 'hotels' },
-  { to: '/rooms', label: 'Rooms', icon: 'BedDouble', key: 'rooms' },
-  { to: '/reservations', label: 'Reservations', icon: 'CalendarCheck', key: 'reservations' },
-  { to: '/guests', label: 'Guests', icon: 'Users', key: 'guests' },
-  { to: '/front-desk', label: 'Front Desk', icon: 'ConciergeBell', key: 'front-desk' },
-  { to: '/housekeeping', label: 'Housekeeping', icon: 'Sparkles', key: 'housekeeping' },
-  { to: '/staff', label: 'Staff', icon: 'IdCard', key: 'staff' },
-  { to: '/payments', label: 'Payments', icon: 'CreditCard', key: 'payments' },
-  { to: '/reports', label: 'Reports', icon: 'BarChart3', key: 'reports' },
+  { to: '/dashboard', segment: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', key: 'dashboard' },
+  { to: '/hotels', label: 'Hotels', icon: 'Building2', key: 'hotels', orgOnly: true },
+  { to: '/rooms', segment: 'rooms', label: 'Rooms', icon: 'BedDouble', key: 'rooms' },
+  { to: '/reservations', segment: 'reservations', label: 'Reservations', icon: 'CalendarCheck', key: 'reservations' },
+  { to: '/guests', segment: 'guests', label: 'Guests', icon: 'Users', key: 'guests' },
+  { to: '/front-desk', segment: 'front-desk', label: 'Front Desk', icon: 'ConciergeBell', key: 'front-desk' },
+  { to: '/housekeeping', segment: 'housekeeping', label: 'Housekeeping', icon: 'Sparkles', key: 'housekeeping' },
+  { to: '/staff', segment: 'staff', label: 'Staff', icon: 'IdCard', key: 'staff' },
+  { to: '/payments', segment: 'payments', label: 'Payments', icon: 'CreditCard', key: 'payments' },
+  { to: '/receivables', segment: 'receivables', label: 'Receivables', icon: 'Wallet', key: 'receivables' },
+  { to: '/reports', segment: 'reports', label: 'Reports', icon: 'BarChart3', key: 'reports' },
 ]
 
 export const ROLE_ACCESS = {
@@ -88,5 +90,5 @@ export function isHotelManagerAdmin(user) {
   return user?.role === HOTEL_MANAGER_ADMIN || user?.role === 'Hotel Manager'
 }
 
-export const PUBLIC_TRAVEL_PATHS = ['/', '/flights', '/cars', '/attractions', '/taxis']
+export const PUBLIC_TRAVEL_PATHS = []
 

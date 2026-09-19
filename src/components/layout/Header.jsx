@@ -1,47 +1,47 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Bell,
-  BedDouble,
   Building2,
   CalendarCheck,
-  Car,
   CircleHelp,
   ConciergeBell,
   LayoutDashboard,
-  Hotel,
   Settings,
   Sparkles,
   LogOut,
   Menu,
-  Plane,
+  Users,
+  IdCard,
+  CreditCard,
+  BarChart3,
+  BedDouble,
+  Wallet,
 } from 'lucide-react'
 import { HotelSelector } from './HotelSelector'
-import { HeaderLoginForm } from './HeaderLoginForm'
 import { useDataStore } from '../../store/dataStore'
 import { useUiStore } from '../../store/uiStore'
-import { useHotelScope } from '../../hooks/useHotelScope'
+import { useHotelScope, useHotelPath } from '../../hooks/useHotelScope'
 import { useAuthStore } from '../../store/authStore'
 import { useHotelStore } from '../../store/hotelStore'
-import { canAccess, isSuperAdmin, PUBLIC_TRAVEL_PATHS } from '../../lib/constants'
+import { canAccess, isSuperAdmin, NAV_ITEMS } from '../../lib/constants'
+import { hotelAppPath, matchHotelApp, navHref } from '../../lib/paths'
 import { initials } from '../../lib/format'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
-const TRAVEL_PILLS = [
-  { to: '/', label: 'Stays', icon: BedDouble, end: true },
-  { to: '/flights', label: 'Flights', icon: Plane },
-  { to: '/cars', label: 'Car rental', icon: Car },
-  { to: '/attractions', label: 'Attractions', icon: Sparkles },
-  { to: '/taxis', label: 'Airport taxis', icon: Car },
-]
-
-const PILLS = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, key: 'dashboard' },
-  { to: '/hotels', label: 'Hotels', icon: Hotel, key: 'hotels' },
-  { to: '/rooms', label: 'Rooms', icon: Building2, key: 'rooms' },
-  { to: '/reservations', label: 'Reservations', icon: CalendarCheck, key: 'reservations' },
-  { to: '/front-desk', label: 'Front Desk', icon: ConciergeBell, key: 'front-desk' },
-  { to: '/settings', label: 'Settings', icon: Settings, key: 'settings' },
-]
+const ICONS = {
+  LayoutDashboard,
+  Building2,
+  BedDouble,
+  CalendarCheck,
+  Users,
+  ConciergeBell,
+  Sparkles,
+  IdCard,
+  CreditCard,
+  BarChart3,
+  Wallet,
+  Settings,
+}
 
 export function Header() {
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen)
@@ -53,16 +53,34 @@ export function Header() {
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
   const setHotel = useHotelStore((state) => state.setHotel)
-  const { currentHotelId, isAllHotels } = useHotelScope()
+  const { currentHotelId, currentHotel, isAllHotels, canViewAll } = useHotelScope()
+  const { inHotelApp, path } = useHotelPath()
   const ref = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const onPublicTravel = PUBLIC_TRAVEL_PATHS.includes(location.pathname)
-  const [loginOpen, setLoginOpen] = useState(false)
+  const hotelRoute = matchHotelApp(location.pathname)
 
   const visible = notifications.filter((item) => isAllHotels || item.hotelId === 'all' || item.hotelId === currentHotelId)
   const unread = visible.filter((item) => !item.read).length
-  const pills = PILLS.filter((item) => user && canAccess(user.role, item.key))
+
+  const pills = !user
+    ? []
+    : inHotelApp
+      ? NAV_ITEMS.filter((item) => !item.orgOnly && canAccess(user.role, item.key)).map((item) => ({
+          ...item,
+          to: navHref(item, hotelRoute.hotelId),
+          icon: ICONS[item.icon],
+          end: item.segment === 'dashboard',
+        }))
+      : NAV_ITEMS.filter((item) => (item.orgOnly || item.segment === 'dashboard') && canAccess(user.role, item.key)).map((item) => ({
+          ...item,
+          icon: ICONS[item.icon],
+          end: item.to === '/dashboard',
+        })).concat(
+          canAccess(user.role, 'settings')
+            ? [{ to: '/settings', label: 'Settings', icon: Settings, key: 'settings' }]
+            : [],
+        )
 
   useEffect(() => {
     const onClick = (event) => {
@@ -72,24 +90,23 @@ export function Header() {
     return () => document.removeEventListener('mousedown', onClick)
   }, [setNotificationsOpen])
 
-  useEffect(() => {
-    setLoginOpen(false)
-  }, [location.pathname])
+  const brandTarget = inHotelApp
+    ? hotelAppPath(hotelRoute.hotelId, 'dashboard')
+    : user
+      ? isSuperAdmin(user) ? '/hotels' : '/'
+      : '/'
+  const brandName = inHotelApp ? currentHotel?.name || 'Hotel system' : 'StayHub'
 
-  useEffect(() => {
-    const openLogin = () => setLoginOpen(true)
-    window.addEventListener('stayhub:open-login', openLogin)
-    return () => window.removeEventListener('stayhub:open-login', openLogin)
-  }, [])
+  const shell = 'mx-auto w-full max-w-[1440px] px-3 sm:px-6 lg:px-8'
 
   return (
     <header className="bg-navy-900 text-white">
-      <div className="mx-auto max-w-[1100px] px-3 py-3 sm:px-4">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <div className={`${shell} py-2.5 sm:py-3`}>
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {user ? (
             <button
               type="button"
-              className="rounded-md p-2 text-white hover:bg-white/10 lg:hidden"
+              className="shrink-0 rounded-md p-2 text-white hover:bg-white/10 lg:hidden"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open menu"
             >
@@ -97,40 +114,47 @@ export function Header() {
             </button>
           ) : null}
 
-          <button type="button" onClick={() => navigate('/')} className="flex min-w-0 shrink-0 items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-gold-400 text-navy-950">
+          <button type="button" onClick={() => navigate(brandTarget)} className="flex min-w-0 shrink-0 items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gold-400 text-navy-950">
               <Building2 size={16} />
             </span>
-            <span className="text-lg font-extrabold tracking-tight sm:text-[22px]">StayHub</span>
+            <span className={`truncate text-lg font-extrabold tracking-tight sm:text-[22px] ${user && inHotelApp ? 'hidden lg:inline lg:max-w-[16rem] xl:max-w-none' : 'max-w-[11rem] sm:max-w-none'}`}>
+              {brandName}
+            </span>
           </button>
 
-          {user && !onPublicTravel ? (
-            <div className="min-w-0 max-w-[9.5rem] flex-1 sm:max-w-xs">
+          {user && inHotelApp ? (
+            <div className={`min-w-0 max-w-[12rem] sm:max-w-xs lg:max-w-sm ${canViewAll ? 'flex-1 lg:flex-none' : 'flex-1 lg:hidden'}`}>
               <HotelSelector />
             </div>
           ) : null}
 
-          <div className="ml-auto flex min-w-0 items-center gap-1 text-sm font-semibold sm:gap-2">
-            {user || !onPublicTravel ? (
+          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1 text-sm font-semibold sm:gap-2">
+            {user ? (
               <>
                 <span className="hidden px-2 py-2 lg:inline">USD</span>
                 <span className="hidden rounded-full px-2 py-1 text-base lg:inline" aria-hidden>🇸🇴</span>
                 <button type="button" className="hidden rounded-full p-2 hover:bg-white/10 lg:inline-flex" aria-label="Help">
                   <CircleHelp size={20} />
                 </button>
-              </>
-            ) : null}
-            {isSuperAdmin(user) ? (
-              <button
-                type="button"
-                onClick={() => navigate('/hotels')}
-                className="hidden rounded-md px-3 py-2 hover:bg-white/10 lg:inline"
-              >
-                List your hotel
-              </button>
-            ) : null}
-            {user ? (
-              <>
+                {isSuperAdmin(user) && !inHotelApp ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/hotels')}
+                    className="hidden rounded-md px-3 py-2 hover:bg-white/10 lg:inline"
+                  >
+                    List your hotel
+                  </button>
+                ) : null}
+                {isSuperAdmin(user) && inHotelApp ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/hotels')}
+                    className="hidden rounded-md px-3 py-2 hover:bg-white/10 lg:inline"
+                  >
+                    All hotels
+                  </button>
+                ) : null}
                 <div ref={ref} className="relative">
                   <button
                     type="button"
@@ -170,8 +194,8 @@ export function Header() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate('/profile')}
-                  className="hidden items-center gap-2 rounded-md px-2 py-1.5 hover:bg-white/10 sm:flex"
+                  onClick={() => navigate(inHotelApp ? path('profile') : '/profile')}
+                  className="flex items-center gap-2 rounded-md px-1.5 py-1.5 hover:bg-white/10 sm:px-2"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs font-bold text-navy-900">
                     {initials(user?.name)}
@@ -182,7 +206,7 @@ export function Header() {
                   onClick={() => {
                     logout()
                     setHotel('all')
-                    navigate('/')
+                    navigate('/', { replace: true, state: {} })
                   }}
                   className="hidden items-center gap-1 rounded-md border border-white px-3 py-1.5 hover:bg-white/10 lg:flex"
                 >
@@ -190,68 +214,56 @@ export function Header() {
                   Sign out
                 </button>
               </>
-            ) : onPublicTravel ? (
-              <>
-                <button
-                  type="button"
-                  id="header-signin-toggle"
-                  onClick={() => setLoginOpen((value) => !value)}
-                  className="h-9 rounded-md bg-white px-3 text-sm font-bold text-[#006ce4] hover:bg-[#f0f6ff] lg:hidden"
-                >
-                  {loginOpen ? 'Close' : 'Sign in'}
-                </button>
-                <div className="hidden lg:block">
-                  <HeaderLoginForm />
-                </div>
-              </>
             ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="hidden rounded-md border border-white px-3 py-1.5 hover:bg-white/10 sm:inline"
-                >
-                  Register
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="rounded-md bg-white px-3 py-1.5 font-bold text-[#006ce4] hover:bg-[#f0f6ff]"
-                >
-                  Sign in
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="rounded-md bg-white px-3 py-1.5 font-bold text-[#006ce4] hover:bg-[#f0f6ff]"
+              >
+                Sign in
+              </button>
             )}
           </div>
         </div>
-        {loginOpen && !user && onPublicTravel ? (
-          <div className="mt-3 lg:hidden">
-            <HeaderLoginForm />
-          </div>
-        ) : null}
       </div>
 
-      <nav className="no-scrollbar mx-auto flex max-w-[1100px] gap-1.5 overflow-x-auto px-3 pb-3 sm:gap-2 sm:px-4">
-        {TRAVEL_PILLS.concat(pills).map((item) => {
-          const Icon = item.icon
-          return (
+      {pills.length ? (
+        <nav className="hidden border-t border-white/10 lg:block">
+          <div className={`${shell} flex flex-wrap gap-1.5 py-2.5 xl:gap-2`}>
+          {pills.map((item) => {
+            const Icon = item.icon
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  `flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-semibold xl:gap-2 xl:px-4 xl:text-sm ${
+                    isActive ? 'border-white bg-white/10' : 'border-transparent hover:bg-white/10'
+                  }`
+                }
+              >
+                <Icon size={16} />
+                {item.label}
+              </NavLink>
+            )
+          })}
+          {inHotelApp && canAccess(user?.role, 'settings') ? (
             <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
+              to={path('settings')}
               className={({ isActive }) =>
-                `flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-semibold sm:gap-2 sm:px-4 sm:py-2 ${
+                `flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-semibold xl:gap-2 xl:px-4 xl:text-sm ${
                   isActive ? 'border-white bg-white/10' : 'border-transparent hover:bg-white/10'
                 }`
               }
             >
-              <Icon size={16} className="sm:hidden" />
-              <Icon size={18} className="hidden sm:block" />
-              {item.label}
+              <Settings size={16} />
+              Settings
             </NavLink>
-          )
-        })}
-      </nav>
+          ) : null}
+          </div>
+        </nav>
+      ) : null}
     </header>
   )
 }

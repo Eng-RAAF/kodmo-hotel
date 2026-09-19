@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CheckCircle2, MapPin, Plus, Star } from 'lucide-react'
 import { PageHeader } from '../components/ui/PageHeader'
 import { Button } from '../components/ui/Button'
@@ -11,6 +12,7 @@ import { useDataStore } from '../store/dataStore'
 import { useHotelStore } from '../store/hotelStore'
 import { useUiStore } from '../store/uiStore'
 import { isSuperAdmin } from '../lib/constants'
+import { hotelAppPath } from '../lib/paths'
 import { formatCurrency, percent } from '../lib/format'
 
 function emptyHotelForm() {
@@ -51,6 +53,7 @@ export function HotelsPage() {
   const setHotelStatus = useDataStore((state) => state.setHotelStatus)
   const setHotel = useHotelStore((state) => state.setHotel)
   const pushToast = useUiStore((state) => state.pushToast)
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
@@ -112,7 +115,7 @@ export function HotelsPage() {
     <div>
       <PageHeader
         title="Hotels"
-        subtitle="Super Admin registers hotels, verifies them, then assigns hotel managers."
+        subtitle="Super Admin registers hotels, verifies them, then opens each hotel’s own system."
         actions={
           canManage ? (
             <Button type="button" onClick={() => { setForm(emptyHotelForm()); setFormError(''); setOpen(true) }}>
@@ -190,9 +193,9 @@ export function HotelsPage() {
                     ) : null}
                     <Button type="button" variant="outline" size="sm" onClick={() => {
                       setHotel(hotel.id)
-                      pushToast(`Switched to ${hotel.name}`)
+                      navigate(hotelAppPath(hotel.id, 'dashboard'))
                     }}>
-                      See availability
+                      Open hotel system
                     </Button>
                   </div>
                 </div>

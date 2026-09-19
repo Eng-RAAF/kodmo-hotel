@@ -9,6 +9,7 @@ const empty = {
   staff: [],
   housekeepingTasks: [],
   payments: [],
+  invoices: [],
   notifications: [],
   roomTypes: [],
   organizations: [],
@@ -34,8 +35,13 @@ export const useDataStore = create((set, get) => ({
   reservationById: (reservationId) => get().reservations.find((item) => item.id === reservationId),
 
   loadAll: async () => {
+    try {
+      await convexMutation(api.invoices.syncFolios)
+    } catch {
+      // Schema may still be pushing; AR page can retry.
+    }
     const data = await convexQuery(api.bootstrap.get)
-    set({ ...data, loaded: true })
+    set({ invoices: [], ...data, loaded: true })
     return data
   },
 
@@ -248,14 +254,41 @@ export const useDataStore = create((set, get) => ({
   },
 
   addPayment: async (payload) => {
-    const { payment, reservation } = await convexMutation(api.payments.create, payload)
-    set({ payments: [payment, ...get().payments] })
-    if (reservation) {
-      set({
-        reservations: get().reservations.map((item) => (item.id === reservation.id ? reservation : item)),
-      })
-    }
+    const { payment, reservation, invoice } = await convexMutation(api.payments.create, payload)
+    set({
+      payments: [payment, ...get().payments],
+      reservations: reservation
+        ? get().reservations.map((item) => (item.id === reservation.id ? reservation : item))
+        : get().reservations,
+      invoices: invoice
+        ? get().invoices.map((item) => (item.id === invoice.id ? invoice : item))
+        : get().invoices,
+    })
     return payment
+  },
+
+  addInvoice: async (payload) => {
+    const invoice = await convexMutation(api.invoices.create, payload)
+    set({ invoices: [invoice, ...get().invoices] })
+    return invoice
+  },
+
+  collectInvoice: async (payload) => {
+    const { invoice, payment, reservation } = await convexMutation(api.invoices.collect, payload)
+    set({
+      invoices: get().invoices.map((item) => (item.id === invoice.id ? invoice : item)),
+      payments: payment ? [payment, ...get().payments] : get().payments,
+      reservations: reservation
+        ? get().reservations.map((item) => (item.id === reservation.id ? reservation : item))
+        : get().reservations,
+    })
+    return invoice
+  },
+
+  voidInvoice: async (invoiceId) => {
+    const invoice = await convexMutation(api.invoices.voidInvoice, { invoiceId })
+    set({ invoices: get().invoices.map((item) => (item.id === invoiceId ? invoice : item)) })
+    return invoice
   },
 
   updateTask: async (taskId, patch) => {

@@ -10,16 +10,17 @@ import {
   IdCard,
   CreditCard,
   BarChart3,
+  Wallet,
   Settings,
   LogOut,
   X,
-  Plane,
-  Car,
 } from 'lucide-react'
-import { NAV_ITEMS, canAccess } from '../../lib/constants'
+import { NAV_ITEMS, canAccess, isSuperAdmin } from '../../lib/constants'
+import { navHref } from '../../lib/paths'
 import { useAuthStore } from '../../store/authStore'
 import { useHotelStore } from '../../store/hotelStore'
 import { useUiStore } from '../../store/uiStore'
+import { useHotelPath, useHotelScope } from '../../hooks/useHotelScope'
 import { initials } from '../../lib/format'
 
 const ICONS = {
@@ -33,23 +34,23 @@ const ICONS = {
   IdCard,
   CreditCard,
   BarChart3,
+  Wallet,
 }
-
-const TRAVEL_LINKS = [
-  { to: '/flights', label: 'Flights', icon: Plane },
-  { to: '/cars', label: 'Car rental', icon: Car },
-  { to: '/attractions', label: 'Attractions', icon: Sparkles },
-  { to: '/taxis', label: 'Airport taxis', icon: Car },
-]
 
 export function Sidebar({ mobile = false }) {
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
   const setHotel = useHotelStore((state) => state.setHotel)
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen)
+  const { currentHotel } = useHotelScope()
+  const { hotelId, inHotelApp, path } = useHotelPath()
   const navigate = useNavigate()
 
-  const items = NAV_ITEMS.filter((item) => canAccess(user?.role, item.key))
+  const items = NAV_ITEMS.filter((item) => {
+    if (!canAccess(user?.role, item.key)) return false
+    if (inHotelApp) return !item.orgOnly
+    return item.orgOnly || item.segment === 'dashboard'
+  })
 
   const close = () => {
     if (mobile) setSidebarOpen(false)
@@ -58,20 +59,26 @@ export function Sidebar({ mobile = false }) {
   const handleLogout = () => {
     logout()
     setHotel('all')
-    navigate('/')
+    navigate('/', { replace: true, state: {} })
   }
+
+  const brand = inHotelApp ? currentHotel?.name || 'Hotel system' : 'StayHub'
+  const settingsTo = inHotelApp ? path('settings') : '/settings'
+  const profileTo = inHotelApp ? path('profile') : '/profile'
 
   return (
     <aside className="relative flex h-full max-h-dvh w-full flex-col overflow-hidden bg-navy-900 text-white">
       <div className="relative px-5 pt-6 pb-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gold-400 text-navy-950">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gold-400 text-navy-950">
               <Building2 size={18} />
             </div>
-            <div>
-              <p className="text-lg font-extrabold leading-none text-white">StayHub</p>
-              <p className="mt-1 text-[11px] font-semibold text-white/70">Hotel operations</p>
+            <div className="min-w-0">
+              <p className="truncate text-lg font-extrabold leading-none text-white">{brand}</p>
+              <p className="mt-1 text-[11px] font-semibold text-white/70">
+                {inHotelApp ? currentHotel?.city || 'Hotel operations' : 'Group console'}
+              </p>
             </div>
           </div>
           {mobile ? (
@@ -83,44 +90,24 @@ export function Sidebar({ mobile = false }) {
       </div>
 
       <nav className="sidebar-scroll relative flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
-        <NavLink
-          to="/"
-          end
-          onClick={close}
-          className={({ isActive }) =>
-            `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold ${
-              isActive ? 'bg-white text-navy-900' : 'text-white/85 hover:bg-white/10 hover:text-white'
-            }`
-          }
-        >
-          <BedDouble size={18} className="shrink-0" />
-          Stays
-        </NavLink>
-        {TRAVEL_LINKS.map((item) => {
-          const Icon = item.icon
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              onClick={close}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold ${
-                  isActive ? 'bg-white text-navy-900' : 'text-white/85 hover:bg-white/10 hover:text-white'
-                }`
-              }
-            >
-              <Icon size={18} className="shrink-0" />
-              {item.label}
-            </NavLink>
-          )
-        })}
+        {isSuperAdmin(user) && inHotelApp ? (
+          <NavLink
+            to="/hotels"
+            onClick={close}
+            className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-white/85 hover:bg-white/10 hover:text-white"
+          >
+            <Building2 size={18} className="shrink-0" />
+            All hotels
+          </NavLink>
+        ) : null}
         {items.map((item) => {
           const Icon = ICONS[item.icon]
+          const to = navHref(item, inHotelApp ? hotelId : null)
           return (
             <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/dashboard'}
+              key={`${to}-${item.key}`}
+              to={to}
+              end={item.segment === 'dashboard' || item.to === '/dashboard'}
               onClick={close}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold ${
@@ -138,7 +125,7 @@ export function Sidebar({ mobile = false }) {
       <div className="relative border-t border-white/15 p-3">
         {canAccess(user?.role, 'settings') ? (
           <NavLink
-            to="/settings"
+            to={settingsTo}
             onClick={close}
             className={({ isActive }) =>
               `mb-1 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold ${
@@ -162,7 +149,7 @@ export function Sidebar({ mobile = false }) {
           type="button"
           onClick={() => {
             close()
-            navigate('/profile')
+            navigate(profileTo)
           }}
           className="flex w-full items-center gap-3 rounded-md bg-white/10 px-3 py-3 text-left hover:bg-white/15"
         >

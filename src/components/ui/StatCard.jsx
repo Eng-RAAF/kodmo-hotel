@@ -2,14 +2,14 @@ import { cn } from '../../lib/format'
 
 export function StatCard({ label, value, hint, icon: Icon, trend }) {
   return (
-    <div className="surface-card rounded-lg p-4">
+    <div className="surface-card min-w-0 rounded-lg p-3.5 sm:p-4">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-semibold text-stone-500">{label}</p>
-          <p className="mt-1 text-[28px] font-extrabold leading-none tracking-tight text-[#1a1a1a]">{value}</p>
+          <p className="mt-1 break-words text-[22px] font-extrabold leading-none tracking-tight text-[#1a1a1a] sm:text-[28px]">{value}</p>
         </div>
         {Icon ? (
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy-900 text-white">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-navy-900 text-white sm:h-10 sm:w-10">
             <Icon size={18} />
           </div>
         ) : null}
@@ -25,7 +25,7 @@ export function StatCard({ label, value, hint, icon: Icon, trend }) {
             {trend}
           </span>
         ) : null}
-        {hint ? <span className="text-stone-500">{hint}</span> : null}
+        {hint ? <span className="min-w-0 text-stone-500">{hint}</span> : null}
       </div>
     </div>
   )

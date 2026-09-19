@@ -13,6 +13,7 @@ import type * as bootstrap from "../bootstrap.js";
 import type * as guests from "../guests.js";
 import type * as hotels from "../hotels.js";
 import type * as housekeeping from "../housekeeping.js";
+import type * as invoices from "../invoices.js";
 import type * as lib from "../lib.js";
 import type * as notifications from "../notifications.js";
 import type * as organization from "../organization.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   guests: typeof guests;
   hotels: typeof hotels;
   housekeeping: typeof housekeeping;
+  invoices: typeof invoices;
   lib: typeof lib;
   notifications: typeof notifications;
   organization: typeof organization;

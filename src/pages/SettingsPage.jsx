@@ -13,7 +13,7 @@ import { useDataStore } from '../store/dataStore'
 import { useUiStore } from '../store/uiStore'
 import { HOTEL_MANAGER_ADMIN, SUPER_ADMIN, isHotelManagerAdmin, isSuperAdmin } from '../lib/constants'
 import { formatCurrency } from '../lib/format'
-import { useHotelScope } from '../hooks/useHotelScope'
+import { useHotelScope, useHotelPath } from '../hooks/useHotelScope'
 
 const TABS = ['Organization', 'Admins', 'Room types']
 
@@ -39,7 +39,8 @@ export function SettingsPage() {
   const rooms = useDataStore((state) => state.rooms)
   const pushToast = useUiStore((state) => state.pushToast)
   const { availableHotels, currentHotelId, isAllHotels } = useHotelScope()
-  const [tab, setTab] = useState(isSuperAdmin(user) ? 'Organization' : 'Admins')
+  const { inHotelApp } = useHotelPath()
+  const [tab, setTab] = useState(isSuperAdmin(user) && !inHotelApp ? 'Organization' : 'Admins')
   const [open, setOpen] = useState(false)
   const [typeOpen, setTypeOpen] = useState(false)
   const [pendingType, setPendingType] = useState(null)
@@ -77,7 +78,9 @@ export function SettingsPage() {
 
   const canCreateAdmins = isSuperAdmin(user) || isHotelManagerAdmin(user)
   const superAdmin = isSuperAdmin(user)
-  const tabs = superAdmin ? TABS : TABS.filter((item) => item !== 'Organization')
+  const tabs = superAdmin && !inHotelApp ? TABS : TABS.filter((item) => item !== 'Organization')
+  const visibleUsers = isAllHotels ? users : users.filter((account) => account.hotelId === currentHotelId)
+  const visibleRoomTypes = isAllHotels ? roomTypes : roomTypes.filter((item) => item.hotelId === currentHotelId)
   const adminRole = watchAdmin('role')
   const orgRows = organizations.length ? organizations : organization?.name ? [organization] : []
   const pendingInUse = pendingType
@@ -208,7 +211,11 @@ export function SettingsPage() {
     <div>
       <PageHeader
         title="Settings"
-        subtitle={superAdmin ? 'Organization profile, login admins, and room-type catalog.' : 'Login admins and room-type catalog for your hotel.'}
+        subtitle={
+          superAdmin && !inHotelApp
+            ? 'Organization profile, login admins, and room-type catalog.'
+            : 'Login admins and room-type catalog for this hotel.'
+        }
       />
       <div className="no-scrollbar mb-5 flex gap-2 overflow-x-auto pb-1">
         {tabs.map((item) => (
@@ -287,7 +294,7 @@ export function SettingsPage() {
           ) : null}
           <Card>
             <Table
-              rows={users}
+              rows={visibleUsers}
               emptyTitle="No admins in this scope"
               columns={[
                 { key: 'name', label: 'Name' },
@@ -342,7 +349,7 @@ export function SettingsPage() {
           </div>
           <Card>
             <Table
-              rows={roomTypes}
+              rows={visibleRoomTypes}
               emptyTitle="No room types yet"
               columns={[
                 { key: 'name', label: 'Type' },
@@ -387,8 +394,13 @@ export function SettingsPage() {
                     name: values.name,
                     email: values.email,
                     password: values.password,
-                    role: isHotelManagerAdmin(user) ? HOTEL_MANAGER_ADMIN : values.role,
-                    hotelId: isHotelManagerAdmin(user) ? user.hotelId : values.role === SUPER_ADMIN ? undefined : values.hotelId,
+                    role: isHotelManagerAdmin(user) || inHotelApp ? HOTEL_MANAGER_ADMIN : values.role,
+                    hotelId:
+                      isHotelManagerAdmin(user) || inHotelApp
+                        ? user.hotelId || currentHotelId
+                        : values.role === SUPER_ADMIN
+                          ? undefined
+                          : values.hotelId,
                   })
                   pushToast('Admin account created')
                   resetAdmin()
@@ -407,7 +419,7 @@ export function SettingsPage() {
           <Field label="Full name"><Input {...registerAdmin('name', { required: true })} /></Field>
           <Field label="Email"><Input type="email" {...registerAdmin('email', { required: true })} /></Field>
           <Field label="Password"><Input type="password" {...registerAdmin('password', { required: true, minLength: 6 })} /></Field>
-          {isSuperAdmin(user) ? (
+          {isSuperAdmin(user) && !inHotelApp ? (
             <Field label="Role">
               <Select {...registerAdmin('role')}>
                 <option value={HOTEL_MANAGER_ADMIN}>Hotel Manager Admin</option>
@@ -417,7 +429,7 @@ export function SettingsPage() {
           ) : (
             <p className="text-sm text-stone-500">Role is locked to Hotel Manager Admin.</p>
           )}
-          {isSuperAdmin(user) && adminRole !== SUPER_ADMIN ? (
+          {isSuperAdmin(user) && !inHotelApp && adminRole !== SUPER_ADMIN ? (
             <Field label="Hotel">
               <Select {...registerAdmin('hotelId')}>
                 {hotels.map((hotel) => (
@@ -442,7 +454,7 @@ export function SettingsPage() {
               onClick={async () => {
                 try {
                   await addRoomType({
-                    hotelId: user?.hotelId || typeForm.hotelId,
+                    hotelId: user?.hotelId || (inHotelApp ? currentHotelId : typeForm.hotelId),
                     name: typeForm.name,
                     rate: Number(typeForm.rate),
                     capacity: Number(typeForm.capacity || 2),
@@ -460,7 +472,7 @@ export function SettingsPage() {
         }
       >
         <div className="grid gap-4">
-          {isSuperAdmin(user) ? (
+          {isSuperAdmin(user) && !inHotelApp ? (
             <Field label="Hotel">
               <Select value={typeForm.hotelId} onChange={(event) => setTypeForm({ ...typeForm, hotelId: event.target.value })}>
                 {availableHotels.map((hotel) => (

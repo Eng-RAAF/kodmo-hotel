@@ -10,15 +10,22 @@ import { Table } from '../components/ui/Table'
 import { Badge, ReservationStatusBadge } from '../components/ui/Badge'
 import { useDataStore } from '../store/dataStore'
 import { useUiStore } from '../store/uiStore'
+import { useHotelScope, useScopedList } from '../hooks/useHotelScope'
 import { initials, formatDate, formatCurrency } from '../lib/format'
 
 export function GuestsPage() {
-  const guests = useDataStore((state) => state.guests)
-  const reservations = useDataStore((state) => state.reservations)
+  const allGuests = useDataStore((state) => state.guests)
+  const reservations = useScopedList(useDataStore((state) => state.reservations))
   const hotels = useDataStore((state) => state.hotels)
   const addGuest = useDataStore((state) => state.addGuest)
   const updateGuest = useDataStore((state) => state.updateGuest)
   const pushToast = useUiStore((state) => state.pushToast)
+  const { isAllHotels } = useHotelScope()
+  const guests = useMemo(() => {
+    if (isAllHotels) return allGuests
+    const guestIds = new Set(reservations.map((item) => item.guestId))
+    return allGuests.filter((guest) => guestIds.has(guest.id))
+  }, [allGuests, reservations, isAllHotels])
   const [query, setQuery] = useState('')
   const [vipOnly, setVipOnly] = useState(false)
   const [open, setOpen] = useState(false)

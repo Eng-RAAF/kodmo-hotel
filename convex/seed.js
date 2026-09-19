@@ -78,6 +78,7 @@ export const resetDemo = mutation({
       'dailyMetrics',
       'notifications',
       'payments',
+      'invoices',
       'housekeepingTasks',
       'reservations',
       'staff',
@@ -280,6 +281,15 @@ export const resetDemo = mutation({
       { id: 'p12', hotelId: 'h2', reservationId: 'rs13', guestId: 'g16', amount: 1280, method: 'Card', status: 'pending', type: 'charge', date: addDays(TODAY, 2), reference: 'INV-4608' },
     ]
     for (const payment of payments) await ctx.db.insert('payments', payment)
+
+    const invoices = [
+      { id: 'inv1', hotelId: 'h1', guestId: 'g3', number: 'INV-1001', company: 'Atlas Logistics', type: 'city_ledger', date: addDays(TODAY, -25), dueDate: addDays(TODAY, -10), amount: 2400, paid: 800, status: 'overdue', notes: 'Corporate group rooms — August' },
+      { id: 'inv2', hotelId: 'h1', number: 'INV-1002', company: 'Hormuud Telecom', type: 'city_ledger', date: addDays(TODAY, -50), dueDate: addDays(TODAY, -20), amount: 3600, paid: 0, status: 'overdue', notes: 'Staff lodging contract' },
+      { id: 'inv3', hotelId: 'h2', guestId: 'g16', number: 'INV-2001', company: 'Somali Airlines', type: 'city_ledger', date: addDays(TODAY, -8), dueDate: addDays(TODAY, 12), amount: 1800, paid: 0, status: 'open', notes: 'Crew layover account' },
+      { id: 'inv4', hotelId: 'h2', number: 'INV-2002', company: 'Kismayo Port Authority', type: 'city_ledger', date: addDays(TODAY, -70), dueDate: addDays(TODAY, -40), amount: 950, paid: 200, status: 'overdue', notes: 'Official visit balance' },
+      { id: 'inv5', hotelId: 'h3', guestId: 'g13', number: 'INV-3001', company: 'Dahabshiil', type: 'city_ledger', date: addDays(TODAY, -5), dueDate: addDays(TODAY, 25), amount: 450, paid: 0, status: 'open', notes: 'City desk rooms' },
+    ]
+    for (const invoice of invoices) await ctx.db.insert('invoices', invoice)
 
     const notifications = [
       { id: 'n1', hotelId: 'h1', title: 'VIP arriving today', body: 'Priya Mehta checks in to Junior Suite 408. Anniversary setup requested.', time: '08:10', read: false, type: 'arrival' },
